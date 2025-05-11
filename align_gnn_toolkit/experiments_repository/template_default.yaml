@@ -1,0 +1,97 @@
+---
+ray:
+  ray.enable: False
+  ray.nbr_cpu: 10
+  ray.nbr_samples: 40
+  ray.search.type: nevergrad
+mlflow:
+  mlflow.enable: False
+  mlflow.experiment_name: Default
+  mlflow.experiment_name.generate: True
+env:
+  env.config.path: ./align_gnn_toolkit/conf/config.cfg
+experiment:
+  experiment.nbr_processes: 1
+  experiment.nbr_trials: 1 
+  experiment.verify.on.eval: False
+  experiment.verify.on.alignment: False 
+  experiment.ignore.valuation: True
+  experiment.path_to_root:  ./output/experiments/
+embedding:
+  embedding.lang: en # [de]
+  embedding.name: transformer #[bert, fasttext, glove ]
+  embedding.transformer_model: roberta-base # [xlm-roberta-base, bert-base-uncased]
+  embedding.sentence_transformer_model: null # [all-MiniLM-L6-v2]
+graph:
+  graph.builder.bidirected: True
+  graph.builder.selfloop: True
+  graph.builder.multigraph: True
+  graph.builder.normalize.features: True
+  graph.builder.relation.from.lm : False
+  graph.builder.relation.to.node : False
+  graph.builder.only.arm : False
+  graph.builder.processor: coreNLP #[stanza]
+  graph.builder.name:
+    - seq
+    - pos
+    - dependency
+    - master
+    #- amr
+    #- ie
+dataset:
+  dataset.name: sick #[see data_set_factory -> getDataSet() for supported dataset]
+  dataset.batch.size: 64
+  dataset.regenerate.graph: False
+  dataset.nbr_processes: 1
+  dataset.use.cache: True
+  dataset.path_to_root: ./output/data/
+  #data.holder_initialize_single_dataset: train
+  #dataset.limit:  100
+optimizer:
+  optimizer.name: Adam
+  optimizer.learning_rate: !!float 9e-06
+  optimizer.weight_decay: !!float 1e-4
+  optimizer.learning_rate.patience: 2
+  scheduler.name: WarmupLR
+  optimizer.warmup_steps: 3
+  optimizer.warmup_init_lr: !!float 5e-6
+train:
+  loss_function.name: MSE
+  train.epoch_number: 200
+  train.early_stop_by: 40
+  train.show_info_by: 20
+  train.show_epoch_info_by: 1
+  do.training: True
+  do.fine.tunig: False
+  fine.tuen.def: null
+  train.logits.converter: sigmoid
+model:
+  model.number_heads: 4
+  model.embedding_size: 1200
+  model.output_dim: 16
+  model.dropout_rate: 0.5  
+  model.similarity_score_type: pairwise_distance
+  model.similarity_score_norm_type: 2
+  model.lock.conv.layers: False
+  model.store.best.model.on.metric:
+    - R2_score
+    - MQE
+    - MAE
+    - RMQE
+    - pearsonr
+    - SpearmanR
+    #- roc_auc
+  model.path_to_root: ./output/models/ 
+alignment:
+  alignment.model: gnn
+  alignment.data_set:
+  alignment.graph.model_path: null
+  alignment.graph.data_set:
+      - benchmark_test
+  alignment.similarity.metric:
+    - prediction
+    - cosine
+    - manhattan
+    - euclidean
+    - dot
+...

@@ -1,0 +1,78 @@
+---
+experiment:
+    experiment.nbr_processes: 1
+    experiment.nbr_trials: 1
+    experiment.verify.on.alignment: True 
+learner:
+  learner.name: Generic
+embedding:
+  embedding.lang: en
+  embedding.name: glove
+graph:
+  graph.builder.bidirected: True
+  graph.builder.selfloop: True
+  graph.builder.multigraph: False
+  graph.builder.processor: coreNLP
+  graph.builder.name:
+    - seq
+    - pos
+    - dependency
+dataset:
+  dataset.name: sick
+  dataset.batch.size: 8
+  dataset.batch.size_ray: [tune.choice, [4,8,16,32,64,128]]
+  dataset.limit:  100
+  dataset.regenerate.graph: False
+  dataset.nbr_processes: 1
+  dataset.use.cache: True
+  dataset.binarize: False
+optimizer:
+  optimizer.name: Adam
+  optimizer.learning_rate: !!float 1e-3
+  optimizer.learning_rate_ray: [tune.loguniform, !!float 1e-4, !!float 1e-1]
+  optimizer.weight_decay: !!float 1e-4
+  optimizer.weight_decay_ray: [tune.loguniform, !!float 1e-5, !!float 1e-2]
+train:
+  loss_function.name: 
+    - MSE 
+    - ONLINE_CONT
+  loss_function.coefficients: 
+    - 1.0
+    - 1.0
+  train.epoch_number: 1000
+  train.early_stop_by: 10
+  train.show_info_by: 50
+model:
+  model.number_heads: 4
+  model.number_heads_ray: [tune.choice, [2,4,8]]
+  model.embedding_size: 900
+  model.embedding_size_ray: [tune.choice, [300,600,900]]
+  model.output_dim: 16
+  model.output_dim_ray: [tune.choice, [4,8,16]]
+  model.dropout_rate: 0.2  
+  model.dropout_rate_ray: [tune.choice, [0,0.2,0.4,0.6]]
+  model.similarity_score_type: pairwise_distance
+  model.similarity_score_norm_type: 2
+  model.soft_max.aggr: False
+  model.conv.layers.nbr: 3
+  model.conv.do.skip.connection: False
+  model.conv.read_out.type: mean
+  #model.conv.read_out.type: asa_pooling
+  model.conv.scoring.type: simple_activation_batch
+  model.conv.activation.type: relu
+  model.simgnn.gnn-operator: TransformerConv
+  model.simgnn.filters-1: 1200
+  model.simgnn.filters-2: 600
+  model.simgnn.filters-3: 300
+  model.embed.one.hot: False
+  model.one.hot.embedding.size: 8
+  model.store.best.model.on.metric:
+    - pearsonr
+    - SpearmanR
+    - roc_auc
+alignment:
+  alignment.graph.data_set:
+      - benchmark_test
+  alignment.similarity.metric:
+    - prediction
+...

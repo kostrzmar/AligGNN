@@ -1,0 +1,35 @@
+---
+embedding:
+  embedding.lang:  en
+  embedding.name: bert
+  #embedding.name:  fasttext
+  #embedding.name:  glove
+
+  #embedding.name: transformer
+  #embedding.transformer_model: bert-base-uncased
+  #embedding.transformer_model: xlm-roberta-base
+  #embedding.transformer_model: roberta-base
+graph:
+  graph.builder.bidirected: True
+  graph.builder.selfloop: True
+  graph.builder.processor: coreNLP
+  graph.builder.name:
+    - seq
+    - pos
+    - dependency
+    #- constituency
+    #- master
+    #- amr
+    #- ie
+dataset:
+  dataset.name: benchmark_test
+  dataset.batch.size: 8
+  dataset.batch.size_ray: [tune.choice, [4,8,16,32,64,128]]
+  dataset.regenerate.graph: True
+  dataset.nbr_processes: 3
+  dataset.use.cache: False
+  #dataset.limit:  100
+  #dataset.id.from: 1000
+  #dataset.id.to: 2000
+  data.holder_initialize_single_dataset: test
+...

@@ -1,0 +1,63 @@
+---
+experiment:
+    experiment.nbr_processes: 1
+    experiment.nbr_trials: 5
+    experiment.verify.on.alignment: False 
+learner:
+  learner.name: Generic
+embedding:
+  embedding.lang:  de
+  embedding.name: transformer
+  embedding.transformer_model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  #embedding.transformer_model: bert-base-german-cased
+graph:
+  graph.builder.bidirected: True
+  graph.builder.selfloop: True
+  graph.builder.multigraph: False
+  graph.builder.processor: stanza
+  graph.builder.name:
+    - seq
+    - pos
+    - dependency
+dataset:
+  dataset.name: german_eval_2022
+  dataset.batch.size: 8
+  dataset.nbr_processes: 1
+  dataset.use.cache: True
+  #dataset.limit:  20000
+optimizer:
+  optimizer.name: Adam
+  optimizer.learning_rate: !!float 1e-4
+  optimizer.weight_decay: !!float 1e-4
+  optimizer.warmup_init_lr: !!float 9e-06
+train:
+  loss_function.name: 
+    - MSE 
+    - ONLINE_CONT
+  loss_function.coefficients: 
+    - 1.0
+    - 1.0
+  train.epoch_number: 40
+  train.early_stop_by: 10
+  train.show_info_by: 40
+model:
+  model.dropout_rate: 0.7  
+  model.similarity_score_type: cosine
+  model.similarity_score_norm_type: 2
+  model.conv.layers.nbr: 3
+  model.conv.do.skip.connection: False
+  model.conv.read_out.type: mean
+  model.conv.scoring.type: simple_activation_batch
+  model.conv.activation.type: relu
+  #model.simgnn.gnn-operator: TransformerConv
+  model.simgnn.gnn-operator: GCNConv
+  model.simgnn.filters-1: 1200
+  model.simgnn.filters-2: 600
+  model.simgnn.filters-3: 300
+alignment:
+  alignment.graph.data_set:
+      - benchmark_test
+  alignment.similarity.metric:
+    - prediction
+    - cosine
+...
